@@ -13,7 +13,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    CORS(app, origins=['http://localhost:5173'], supports_credentials=True)
+    CORS(app) # Allow all origins for production
     
     db.init_app(app)
     
