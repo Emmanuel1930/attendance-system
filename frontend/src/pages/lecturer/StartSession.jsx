@@ -48,7 +48,7 @@ export default function StartSession() {
       const res = await axios.post('/api/sessions/start', {
         course_id: courseId,
         lecturer_id: user.db_id || 1,
-        base_url: import.meta.env.VITE_BASE_URL || 'http://localhost:5173'
+        base_url: window.location.origin
       });
       setSession(res.data);
     } catch (err) {
