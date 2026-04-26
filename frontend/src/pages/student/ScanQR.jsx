@@ -24,12 +24,17 @@ export default function ScanQR() {
           scanner.clear();
           scannerRef.current = null;
           
+          let token = decodedText;
+          if (decodedText.includes('/attend/')) {
+            token = decodedText.split('/attend/')[1];
+          }
+          
           const userStr = localStorage.getItem('run_user');
           const user = JSON.parse(userStr);
           
           try {
             const res = await axios.post('/api/attendance/scan', {
-              qr_token: decodedText,
+              qr_token: token,
               student_id: user.db_id || 1
             });
             setScanResult(res.data);
