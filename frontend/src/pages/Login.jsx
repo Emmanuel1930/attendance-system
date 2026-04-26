@@ -14,8 +14,8 @@ export default function Login() {
 
   useEffect(() => {
     if (activeTab === 'student') {
-      setEmail('student@run.edu.ng');
-      setPassword('student123');
+      setEmail('');
+      setPassword('');
     } else if (activeTab === 'lecturer') {
       setEmail('lecturer@run.edu.ng');
       setPassword('lecturer123');
@@ -120,13 +120,15 @@ export default function Login() {
             </button>
           </form>
 
-          <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: 'var(--off-white)', borderRadius: '8px', fontSize: '0.875rem' }}>
-            <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Demo Credentials</div>
-            <div className="mono" style={{ color: 'var(--muted-text)' }}>
-              Email: {activeTab}@run.edu.ng<br/>
-              Password: {activeTab}123
+          {activeTab !== 'student' && (
+            <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: 'var(--off-white)', borderRadius: '8px', fontSize: '0.875rem' }}>
+              <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Demo Credentials</div>
+              <div className="mono" style={{ color: 'var(--muted-text)' }}>
+                Email: {activeTab}@run.edu.ng<br/>
+                Password: {activeTab}123
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
       </div>
