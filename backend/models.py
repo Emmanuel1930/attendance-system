@@ -20,6 +20,7 @@ class Lecturer(db.Model):
     name = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
     department = db.Column(db.String(100))
+    password = db.Column(db.String(50))
 
 class Course(db.Model):
     __tablename__ = 'courses'

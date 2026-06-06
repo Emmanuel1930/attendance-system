@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from models import Student
+from models import db, Student, Lecturer
+import uuid
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -37,6 +38,9 @@ def login():
     email = data.get('email')
     password = data.get('password')
     
+    if not email or not (email.endswith('@gmail.com') or email.endswith('@run.edu.ng')):
+        return jsonify({'success': False, 'message': 'Invalid email domain. Please use @gmail.com or @run.edu.ng'}), 401
+    
     for user in DEMO_USERS:
         if user['email'] == email and user['password'] == password:
             user_data = {k: v for k, v in user.items() if k != 'password'}
@@ -57,8 +61,51 @@ def login():
                 'db_id': student.id
             }
         })
+        
+    lecturer = Lecturer.query.filter_by(email=email, password=password).first()
+    if lecturer:
+        return jsonify({
+            'success': True,
+            'user': {
+                'name': lecturer.name,
+                'email': lecturer.email,
+                'role': 'lecturer',
+                'id': lecturer.lecturer_id,
+                'department': lecturer.department,
+                'db_id': lecturer.id
+            }
+        })
             
     return jsonify({'success': False, 'message': 'Invalid email or password'}), 401
+
+@auth_bp.route('/register_lecturer', methods=['POST'])
+def register_lecturer():
+    data = request.json
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+    department = data.get('department')
+    
+    if not all([name, email, password, department]):
+        return jsonify({'success': False, 'message': 'All fields are required'}), 400
+        
+    if not (email.endswith('@gmail.com') or email.endswith('@run.edu.ng')):
+        return jsonify({'success': False, 'message': 'Email must end with @gmail.com or @run.edu.ng'}), 400
+        
+    if Lecturer.query.filter_by(email=email).first():
+        return jsonify({'success': False, 'message': 'Email already registered'}), 409
+        
+    new_lecturer = Lecturer(
+        lecturer_id=f"LECT/{str(uuid.uuid4())[:8].upper()}",
+        name=name,
+        email=email,
+        password=password,
+        department=department
+    )
+    db.session.add(new_lecturer)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Lecturer registered successfully'})
 
 @auth_bp.route('/logout', methods=['POST'])
 def logout():

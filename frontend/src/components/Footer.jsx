@@ -3,7 +3,7 @@ export default function Footer() {
     <footer style={{ backgroundColor: 'var(--dark-text)', color: 'var(--muted-text)', padding: '1.5rem', marginTop: 'auto' }}>
       <div className="page-container" style={{ padding: '0', minHeight: 'auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
         <div style={{ fontSize: '0.875rem' }}>
-          RUN Attendance System &copy; 2024 &mdash; Redeemer's University Nigeria
+          RUN Attendance System &copy; 2026 developed by bright, feranmi, David.
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem' }} className="mono">

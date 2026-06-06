@@ -109,6 +109,9 @@ def submit_attendance():
     if not name or not matric_number or not session_token or not email:
         return jsonify({'success': False, 'message': 'Missing required fields'}), 400
         
+    if not (email.endswith('@gmail.com') or email.endswith('@run.edu.ng')):
+        return jsonify({'success': False, 'message': 'Email must be @gmail.com or @run.edu.ng'}), 400
+        
     session = AttendanceSession.query.filter_by(session_code=session_token).first()
     
     if not session:

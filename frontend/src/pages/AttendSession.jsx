@@ -127,13 +127,15 @@ export default function AttendSession() {
                 />
               </div>
               <div className="mb-4">
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>School Email</label>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Email Address</label>
                 <input 
                   type="email" 
                   className="input-field" 
-                  placeholder="yourname@run.edu.ng" 
+                  placeholder="name@run.edu.ng or name@gmail.com" 
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)} 
+                  pattern=".*@(gmail\.com|run\.edu\.ng)$"
+                  title="Please enter a valid @gmail.com or @run.edu.ng email address"
                   required 
                 />
               </div>
