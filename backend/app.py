@@ -7,6 +7,7 @@ from routes.sessions import sessions_bp
 from routes.qr import qr_bp
 from routes.attendance import attendance_bp
 from routes.admin import admin_bp
+from routes.courses import courses_bp
 from datetime import datetime, timedelta
 
 def create_app():
@@ -22,6 +23,7 @@ def create_app():
     app.register_blueprint(qr_bp, url_prefix='/api/qr')
     app.register_blueprint(attendance_bp, url_prefix='/api/attendance')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
+    app.register_blueprint(courses_bp, url_prefix='/api/courses')
     
     with app.app_context():
         db.create_all()

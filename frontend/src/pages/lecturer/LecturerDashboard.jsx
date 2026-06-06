@@ -6,13 +6,17 @@ export default function LecturerDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [activeSessions, setActiveSessions] = useState([]);
+  const [myCourses, setMyCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const myCourses = [
-    { code: 'CSC 401', name: 'Software Engineering', id: 1 },
-    { code: 'CSC 403', name: 'Computer Networks', id: 2 },
-    { code: 'CSC 405', name: 'Artificial Intelligence', id: 3 },
-  ];
+  // New Course State
+  const [showForm, setShowForm] = useState(false);
+  const [newCourse, setNewCourse] = useState({
+    course_code: '',
+    course_name: '',
+    units: '',
+    level: '100'
+  });
 
   useEffect(() => {
     const userStr = localStorage.getItem('run_user');
@@ -25,8 +29,13 @@ export default function LecturerDashboard() {
 
     const fetchData = async () => {
       try {
-        const res = await axios.get(`/api/sessions/active?lecturer_id=${userData.db_id || 1}`);
-        setActiveSessions(res.data.sessions || []);
+        const lecturerId = userData.db_id || userData.id || 1;
+        const [sessionsRes, coursesRes] = await Promise.all([
+          axios.get(`/api/sessions/active?lecturer_id=${lecturerId}`),
+          axios.get(`/api/courses?lecturer_id=${lecturerId}`)
+        ]);
+        setActiveSessions(sessionsRes.data.sessions || []);
+        setMyCourses(coursesRes.data.courses || []);
       } catch (err) {
         console.error(err);
       } finally {
@@ -35,6 +44,40 @@ export default function LecturerDashboard() {
     };
     fetchData();
   }, [navigate]);
+
+  const handleCreateCourse = async (e) => {
+    e.preventDefault();
+    try {
+      const lecturerId = user.db_id || user.id || 1;
+      const res = await axios.post('/api/courses', {
+        ...newCourse,
+        lecturer_id: lecturerId
+      });
+      if (res.data.success) {
+        setMyCourses([...myCourses, res.data.course]);
+        setShowForm(false);
+        setNewCourse({ course_code: '', course_name: '', units: '', level: '100' });
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Error creating course');
+    }
+  };
+
+  const handleDeleteCourse = async (courseId) => {
+    if (!window.confirm('Are you sure you want to delete this course? This will delete all its attendance records!')) {
+      return;
+    }
+    try {
+      const res = await axios.delete(`/api/courses/${courseId}`);
+      if (res.data.success) {
+        setMyCourses(myCourses.filter(c => c.id !== courseId));
+        // Remove related active sessions from UI
+        setActiveSessions(activeSessions.filter(s => s.course_id !== courseId));
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Error deleting course');
+    }
+  };
 
   if (loading) return <div className="page-container text-center mt-4">Loading dashboard...</div>;
 
@@ -61,7 +104,43 @@ export default function LecturerDashboard() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="mb-2">
         <h2 style={{ fontSize: '1.25rem' }}>My Courses</h2>
+        <button className="btn btn-primary" style={{ padding: '0.5rem 1rem' }} onClick={() => setShowForm(!showForm)}>
+          {showForm ? 'Cancel' : 'Add New Course'}
+        </button>
       </div>
+
+      {showForm && (
+        <div className="card mb-4" style={{ backgroundColor: '#f8fafc' }}>
+          <h3 className="mb-3" style={{ fontSize: '1.1rem' }}>Create a Course</h3>
+          <form onSubmit={handleCreateCourse} style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+            <div>
+              <label className="form-label">Course Code (e.g. CSC 201)</label>
+              <input type="text" className="form-control" value={newCourse.course_code} onChange={e => setNewCourse({...newCourse, course_code: e.target.value})} required />
+            </div>
+            <div>
+              <label className="form-label">Course Name</label>
+              <input type="text" className="form-control" value={newCourse.course_name} onChange={e => setNewCourse({...newCourse, course_name: e.target.value})} required />
+            </div>
+            <div>
+              <label className="form-label">Units</label>
+              <input type="number" className="form-control" value={newCourse.units} onChange={e => setNewCourse({...newCourse, units: e.target.value})} min="1" max="6" required />
+            </div>
+            <div>
+              <label className="form-label">Level</label>
+              <select className="form-control" value={newCourse.level} onChange={e => setNewCourse({...newCourse, level: e.target.value})}>
+                <option value="100">100 Level</option>
+                <option value="200">200 Level</option>
+                <option value="300">300 Level</option>
+                <option value="400">400 Level</option>
+                <option value="500">500 Level</option>
+              </select>
+            </div>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <button type="submit" className="btn btn-primary w-full">Save Course</button>
+            </div>
+          </form>
+        </div>
+      )}
 
       <div className="card mb-4" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-responsive">
@@ -70,25 +149,42 @@ export default function LecturerDashboard() {
               <tr>
                 <th>Course Code</th>
                 <th>Course Name</th>
-                <th>Action</th>
+                <th>Level</th>
+                <th>Units</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {myCourses.map(course => (
-                <tr key={course.id}>
-                  <td style={{ fontWeight: 600 }}>{course.code}</td>
-                  <td>{course.name}</td>
-                  <td>
-                    <button 
-                      className="btn btn-primary" 
-                      style={{ padding: '0.4rem 1rem', minHeight: 'auto' }}
-                      onClick={() => navigate('/lecturer/session', { state: { courseId: course.id } })}
-                    >
-                      Start Session
-                    </button>
-                  </td>
+              {myCourses.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center text-muted py-4">No courses added yet.</td>
                 </tr>
-              ))}
+              ) : (
+                myCourses.map(course => (
+                  <tr key={course.id}>
+                    <td style={{ fontWeight: 600 }}>{course.code}</td>
+                    <td>{course.name}</td>
+                    <td>{course.level}L</td>
+                    <td>{course.units}</td>
+                    <td style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button 
+                        className="btn btn-primary" 
+                        style={{ padding: '0.4rem 1rem', minHeight: 'auto' }}
+                        onClick={() => navigate('/lecturer/session', { state: { courseId: course.id } })}
+                      >
+                        Start Session
+                      </button>
+                      <button 
+                        className="btn" 
+                        style={{ padding: '0.4rem 1rem', minHeight: 'auto', backgroundColor: '#fee2e2', color: '#dc2626' }}
+                        onClick={() => handleDeleteCourse(course.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
