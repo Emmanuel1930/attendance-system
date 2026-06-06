@@ -110,24 +110,24 @@ export default function LecturerDashboard() {
       </div>
 
       {showForm && (
-        <div className="card mb-4" style={{ backgroundColor: '#f8fafc' }}>
-          <h3 className="mb-3" style={{ fontSize: '1.1rem' }}>Create a Course</h3>
-          <form onSubmit={handleCreateCourse} style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
-            <div>
-              <label className="form-label">Course Code (e.g. CSC 201)</label>
-              <input type="text" className="form-control" value={newCourse.course_code} onChange={e => setNewCourse({...newCourse, course_code: e.target.value})} required />
+        <div className="card mb-4" style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
+          <h3 className="mb-4" style={{ fontSize: '1.2rem', color: 'var(--primary-blue)', fontWeight: '600' }}>Create a New Course</h3>
+          <form onSubmit={handleCreateCourse} style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={{ fontSize: '0.9rem', fontWeight: '500', color: '#475569' }}>Course Code (e.g. CSC 201)</label>
+              <input type="text" style={{ padding: '0.6rem', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.2s' }} placeholder="CSC 201" value={newCourse.course_code} onChange={e => setNewCourse({...newCourse, course_code: e.target.value})} required />
             </div>
-            <div>
-              <label className="form-label">Course Name</label>
-              <input type="text" className="form-control" value={newCourse.course_name} onChange={e => setNewCourse({...newCourse, course_name: e.target.value})} required />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={{ fontSize: '0.9rem', fontWeight: '500', color: '#475569' }}>Course Name</label>
+              <input type="text" style={{ padding: '0.6rem', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.2s' }} placeholder="Intro to Programming" value={newCourse.course_name} onChange={e => setNewCourse({...newCourse, course_name: e.target.value})} required />
             </div>
-            <div>
-              <label className="form-label">Units</label>
-              <input type="number" className="form-control" value={newCourse.units} onChange={e => setNewCourse({...newCourse, units: e.target.value})} min="1" max="6" required />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={{ fontSize: '0.9rem', fontWeight: '500', color: '#475569' }}>Units</label>
+              <input type="number" style={{ padding: '0.6rem', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '1rem', outline: 'none' }} value={newCourse.units} onChange={e => setNewCourse({...newCourse, units: e.target.value})} min="1" max="6" required />
             </div>
-            <div>
-              <label className="form-label">Level</label>
-              <select className="form-control" value={newCourse.level} onChange={e => setNewCourse({...newCourse, level: e.target.value})}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={{ fontSize: '0.9rem', fontWeight: '500', color: '#475569' }}>Level</label>
+              <select style={{ padding: '0.6rem', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '1rem', outline: 'none', backgroundColor: '#fff' }} value={newCourse.level} onChange={e => setNewCourse({...newCourse, level: e.target.value})}>
                 <option value="100">100 Level</option>
                 <option value="200">200 Level</option>
                 <option value="300">300 Level</option>
@@ -135,8 +135,8 @@ export default function LecturerDashboard() {
                 <option value="500">500 Level</option>
               </select>
             </div>
-            <div style={{ gridColumn: '1 / -1' }}>
-              <button type="submit" className="btn btn-primary w-full">Save Course</button>
+            <div style={{ gridColumn: '1 / -1', marginTop: '0.5rem' }}>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', fontWeight: '600' }}>Save Course</button>
             </div>
           </form>
         </div>
